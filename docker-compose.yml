@@ -1,6 +1,8 @@
 services:
   # -----------------------------------------------------------------------------------------------------
   sonarr:
+    env_file:
+      - ./.env
     image: lscr.io/linuxserver/sonarr:latest
     container_name: sonarr
     environment:
@@ -9,12 +11,15 @@ services:
       - TZ=Etc/UTC
     volumes:
       - sonarr-config:/config
-      - D:\video:/video
+      - ${SERIES_DIR}:/video
     ports:
-      - 10002:8989
+      - ${SONARR_PORT}:8989
     restart: unless-stopped
+
   # -----------------------------------------------------------------------------------------------------
   radarr:
+    env_file:
+      - ./.env
     image: lscr.io/linuxserver/radarr:latest
     container_name: radarr
     environment:
@@ -23,12 +28,14 @@ services:
       - TZ=Etc/UTC
     volumes:
       - radarr-config:/config
-      - D:\video:/video
+      - ${MOVIE_DIR}:/video
     ports:
-      - 10003:7878
+      - ${RADARR_PORT}:7878
     restart: unless-stopped
   # -----------------------------------------------------------------------------------------------------
   prowlarr:
+    env_file:
+      - ./.env
     image: lscr.io/linuxserver/prowlarr:latest
     container_name: prowlarr
     environment:
@@ -38,10 +45,12 @@ services:
     volumes:
       - prowlarr-config:/config
     ports:
-      - 10001:9696
+      - ${PROWLARR_PORT}:9696
     restart: unless-stopped
   # -----------------------------------------------------------------------------------------------------
   jellyfin:
+    env_file:
+      - ./.env
     image: lscr.io/linuxserver/jellyfin:latest
     container_name: jellyfin
     environment:
@@ -50,9 +59,10 @@ services:
       - TZ=Etc/UTC
     volumes:
       - jellyfin-config:/config
-      - D:\video:/video
+      - ${SERIES_DIR}:/video/series
+      - ${MOVIE_DIR}:/video/movies
     ports:
-      - 10000:8096
+      - ${JELLYFIN_PORT}:8096
     restart: unless-stopped
 # -----------------------------------------------------------------------------------------------------
 volumes:
