@@ -40,8 +40,23 @@ services:
     ports:
       - 10001:9696
     restart: unless-stopped
+  # -----------------------------------------------------------------------------------------------------
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:latest
+    container_name: jellyfin
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    volumes:
+      - jellyfin-config:/config
+      - D:\video:/video
+    ports:
+      - 10000:8096
+    restart: unless-stopped
 # -----------------------------------------------------------------------------------------------------
 volumes:
   sonarr-config:
   radarr-config:
   prowlarr-config:
+  jellyfin-config:
