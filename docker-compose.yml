@@ -60,7 +60,6 @@ services:
     volumes:
       - jellyfin-config:/config
       - ${VIDEO_DIR}:/video/series
-      - ${MOVIE_DIR}:/video/movies
     ports:
       - ${JELLYFIN_PORT}:8096
     restart: unless-stopped
