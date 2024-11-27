@@ -8,7 +8,7 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=Etc/UTC
+      - TZ=Africa/Johannesburg
     volumes:
       - sonarr-config:/config
       - ${VIDEO_DIR}:/video
@@ -25,7 +25,7 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=Etc/UTC
+      - TZ=Africa/Johannesburg
     volumes:
       - radarr-config:/config
       - ${VIDEO_DIR}:/video
@@ -41,7 +41,7 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=Etc/UTC
+      - TZ=Africa/Johannesburg
     volumes:
       - prowlarr-config:/config
     ports:
@@ -56,7 +56,7 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=Etc/UTC
+      - TZ=Africa/Johannesburg
     volumes:
       - jellyfin-config:/config
       - ${VIDEO_DIR}:/video
@@ -72,7 +72,7 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=Etc/UTC
+      - TZ=Africa/Johannesburg
       - WEBUI_PORT=8080
       - TORRENTING_PORT=6881
     volumes:
@@ -83,6 +83,21 @@ services:
       - 6881:6881
       - 6881:6881/udp
     restart: unless-stopped
+  # -----------------------------------------------------------------------------------------------------
+  jellyseerr:
+    env_file:
+      - ./.env
+    image: fallenbagel/jellyseerr:latest
+    container_name: jellyseerr
+    environment:
+      - LOG_LEVEL=debug
+      - TZ=Africa/Johannesburg
+    ports:
+      - ${JELLYSEER_PORT}:5055
+    volumes:
+      - jellyseerr-config:/app/config
+      - ${VIDEO_DIR}:/video
+    restart: unless-stopped
 # -----------------------------------------------------------------------------------------------------
 volumes:
   sonarr-config:
@@ -90,3 +105,4 @@ volumes:
   prowlarr-config:
   jellyfin-config:
   qbittorrent-config:
+  jellyseerr-config:
