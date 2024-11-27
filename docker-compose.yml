@@ -59,7 +59,7 @@ services:
       - TZ=Etc/UTC
     volumes:
       - jellyfin-config:/config
-      - ${VIDEO_DIR}:/video/series
+      - ${VIDEO_DIR}:/video
     ports:
       - ${JELLYFIN_PORT}:8096
     restart: unless-stopped
