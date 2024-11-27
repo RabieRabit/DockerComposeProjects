@@ -11,7 +11,7 @@ services:
       - TZ=Etc/UTC
     volumes:
       - sonarr-config:/config
-      - ${SERIES_DIR}:/video
+      - ${VIDEO_DIR}:/video
     ports:
       - ${SONARR_PORT}:8989
     restart: unless-stopped
@@ -28,7 +28,7 @@ services:
       - TZ=Etc/UTC
     volumes:
       - radarr-config:/config
-      - ${MOVIE_DIR}:/video
+      - ${VIDEO_DIR}:/video
     ports:
       - ${RADARR_PORT}:7878
     restart: unless-stopped
@@ -59,7 +59,7 @@ services:
       - TZ=Etc/UTC
     volumes:
       - jellyfin-config:/config
-      - ${SERIES_DIR}:/video/series
+      - ${VIDEO_DIR}:/video/series
       - ${MOVIE_DIR}:/video/movies
     ports:
       - ${JELLYFIN_PORT}:8096
