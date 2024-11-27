@@ -23,6 +23,7 @@ services:
       - TZ=Etc/UTC
     volumes:
       - radarr-config:/config
+      - D:\video:/video
     ports:
       - 10003:7878
     restart: unless-stopped
