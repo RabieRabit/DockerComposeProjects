@@ -98,6 +98,18 @@ services:
       - jellyseerr-config:/app/config
       - ${VIDEO_DIR}:/video
     restart: unless-stopped
+  # -----------------------------------------------------------------------------------------------------
+  homarr:
+    container_name: homarr
+    image: ghcr.io/ajnart/homarr:latest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock # Optional, only if you want docker integration
+      - homarr-configs:/app/data/configs
+      - homarr-icons:/app/public/icons
+      - homarr-data:/data
+    ports:
+      - "${HOMARR_PORT}:7575"
+    restart: unless-stopped
 # -----------------------------------------------------------------------------------------------------
 volumes:
   sonarr-config:
@@ -106,3 +118,6 @@ volumes:
   jellyfin-config:
   qbittorrent-config:
   jellyseerr-config:
+  homarr-configs:
+  homarr-icons:
+  homarr-data:
