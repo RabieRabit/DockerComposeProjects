@@ -1,0 +1,16 @@
+entryPoints:
+  web:
+    address: ":80"
+  websecure:
+    address: ":443"
+
+providers:
+  docker:
+    exposedByDefault: false # Only explicitly labeled containers will be routed
+
+certificatesResolvers:
+  letsencrypt:
+    acme:
+      email: dylanschutte10@gmail.com
+      httpChallenge:
+        entryPoint: web

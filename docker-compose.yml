@@ -12,9 +12,12 @@ services:
     volumes:
       - sonarr-config:/config
       - ${VIDEO_DIR}:/video
-    ports:
-      - ${SONARR_PORT}:8989
     restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.sonarr.rule=Host(`sonarr.${DOMAIN}`)"
+      - "traefik.http.routers.sonarr.entrypoints=web"
+      - "traefik.http.services.sonarr.loadbalancer.server.port=8989"
 
   # -----------------------------------------------------------------------------------------------------
   radarr:
@@ -32,6 +35,11 @@ services:
     ports:
       - ${RADARR_PORT}:7878
     restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.radarr.rule=Host(`radarr.${DOMAIN}`)"
+      - "traefik.http.routers.radarr.entrypoints=web"
+      - "traefik.http.services.radarr.loadbalancer.server.port=7878"
   # -----------------------------------------------------------------------------------------------------
   prowlarr:
     env_file:
@@ -44,9 +52,12 @@ services:
       - TZ=Africa/Johannesburg
     volumes:
       - prowlarr-config:/config
-    ports:
-      - ${PROWLARR_PORT}:9696
     restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.prowlarr.rule=Host(`prowlarr.${DOMAIN}`)"
+      - "traefik.http.routers.prowlarr.entrypoints=web"
+      - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"
   # -----------------------------------------------------------------------------------------------------
   jellyfin:
     env_file:
@@ -60,9 +71,12 @@ services:
     volumes:
       - jellyfin-config:/config
       - ${VIDEO_DIR}:/video
-    ports:
-      - ${JELLYFIN_PORT}:8096
     restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.jellyfin.rule=Host(`jellyfin.${DOMAIN}`)"
+      - "traefik.http.routers.jellyfin.entrypoints=web"
+      - "traefik.http.services.jellyfin.loadbalancer.server.port=8096"
   # -----------------------------------------------------------------------------------------------------
   qbittorrent:
     env_file:
@@ -79,10 +93,14 @@ services:
       - qbittorrent-config:/config
       - ${VIDEO_DIR}:/video #optional
     ports:
-      - 8080:8080
       - 6881:6881
       - 6881:6881/udp
     restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.qbittorrent.rule=Host(`qbittorrent.${DOMAIN}`)"
+      - "traefik.http.routers.qbittorrent.entrypoints=web"
+      - "traefik.http.services.qbittorrent.loadbalancer.server.port=8080"
   # -----------------------------------------------------------------------------------------------------
   jellyseerr:
     env_file:
@@ -98,6 +116,11 @@ services:
       - jellyseerr-config:/app/config
       - ${VIDEO_DIR}:/video
     restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.jellyseerr.rule=Host(`jellyseerr.${DOMAIN}`)"
+      - "traefik.http.routers.jellyseerr.entrypoints=web"
+      - "traefik.http.services.jellyseerr.loadbalancer.server.port=5055"
   # -----------------------------------------------------------------------------------------------------
   homarr:
     container_name: homarr
@@ -107,9 +130,12 @@ services:
       - homarr-configs:/app/data/configs
       - homarr-icons:/app/public/icons
       - homarr-data:/data
-    ports:
-      - "${HOMARR_PORT}:7575"
     restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.homarr.rule=Host(`homarr.${DOMAIN}`)"
+      - "traefik.http.routers.homarr.entrypoints=web"
+      - "traefik.http.services.homarr.loadbalancer.server.port=7575"
   # -----------------------------------------------------------------------------------------------------
   flaresolverr:
     image: ghcr.io/flaresolverr/flaresolverr:latest
@@ -119,8 +145,23 @@ services:
       - LOG_HTML=${LOG_HTML:-false}
       - CAPTCHA_SOLVER=${CAPTCHA_SOLVER:-none}
       - TZ=Africa/Johannesburg
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.flaresolverr.rule=Host(`flaresolverr.${DOMAIN}`)"
+      - "traefik.http.routers.flaresolverr.entrypoints=web"
+      - "traefik.http.services.flaresolverr.loadbalancer.server.port=8191"
+  # -----------------------------------------------------------------------------------------------------
+  traefik:
+    image: traefik:v2.10
+    container_name: traefik
+    environment:
+      - TZ=Africa/Johannesburg # Correct key-value pair
     ports:
-      - "${FLARESOLVERR_PORT}:8191"
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./traefik.yml:/etc/traefik/traefik.yml:ro
     restart: unless-stopped
 # -----------------------------------------------------------------------------------------------------
 volumes:
