@@ -1,0 +1,36 @@
+services:
+  db:
+    image: mysql:latest
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "root"
+      MYSQL_ALLOW_EMPTY_PASSWORD: "true"
+    volumes:
+      - mysql-config:/etc/mysql/conf.d
+      - mysql-logs:/logs
+      - mysql-data:/var/lib/mysql
+    networks:
+      - mysql-phpmyadmin
+
+  phpmyadmin:
+    depends_on:
+      - db
+    image: phpmyadmin
+    restart: unless-stopped
+    ports:
+      - "8090:80"
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: "root"
+    networks:
+      - mysql-phpmyadmin
+
+networks:
+  mysql-phpmyadmin:
+
+volumes:
+  mysql-config:
+  mysql-data:
+  mysql-logs:
