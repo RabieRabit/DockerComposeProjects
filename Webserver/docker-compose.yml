@@ -27,6 +27,19 @@ services:
     networks:
       - mysql-phpmyadmin
 
+  mssql:
+    container_name: sql-server
+    image: mcr.microsoft.com/mssql/server:2017-latest
+    restart: unless-stopped
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "UmGgkaIuBzA8TJ"
+      MSSQL_PID: "Developer"
+    ports:
+      - 1433:1433
+    volumes:
+      - mssql-volume:/var/opt/mssql
+
 networks:
   mysql-phpmyadmin:
 
@@ -34,3 +47,4 @@ volumes:
   mysql-config:
   mysql-data:
   mysql-logs:
+  mssql-volume:
