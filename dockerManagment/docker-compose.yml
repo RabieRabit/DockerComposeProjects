@@ -1,4 +1,5 @@
-watchtower:
+services:
+  watchtower:
     image: containrrr/watchtower
     container_name: watchtower
     restart: unless-stopped
