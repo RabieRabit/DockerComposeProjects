@@ -110,6 +110,16 @@ services:
     ports:
       - "${FLARESOLVERR_PORT}:8191"
   # -----------------------------------------------------------------------------------------------------
+  prometheus-qbittorrent-exporter:
+    image: ghcr.io/esanchezm/prometheus-qbittorrent-exporter
+    container_name: prometheus-qbittorrent-exporter
+    environment:
+      - QBITTORRENT_PORT=8080
+      - QBITTORRENT_HOST=127.0.0.1
+    ports:
+      - "${PROMETHEUS_PORT}:8000"
+    restart: unless-stopped
+  # -----------------------------------------------------------------------------------------------------
 volumes:
   sonarr-config:
   radarr-config:
