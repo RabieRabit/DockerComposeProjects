@@ -8,6 +8,4 @@ services:
     environment:
       - WATCHTOWER_CLEANUP=true # Removes old images to free space
       - WATCHTOWER_POLL_INTERVAL=14400 # Check for updates every 24 hours (86400 sec)
-
-volumes:
-  portainer_data:
+      - TZ=Africa/Johannesburg 
