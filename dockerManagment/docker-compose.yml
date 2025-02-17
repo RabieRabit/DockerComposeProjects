@@ -7,7 +7,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - WATCHTOWER_CLEANUP=true # Removes old images to free space
-      - WATCHTOWER_POLL_INTERVAL=86400 # Check for updates every 24 hours (86400 sec)
+      - WATCHTOWER_POLL_INTERVAL=14400 # Check for updates every 24 hours (86400 sec)
 
 volumes:
   portainer_data:
