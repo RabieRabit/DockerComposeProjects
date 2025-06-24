@@ -86,39 +86,19 @@ services:
     ports:
       - ${JELLYSEER_PORT}:5055
   # -----------------------------------------------------------------------------------------------------
-  homarr:
-    container_name: homarr
-    image: ghcr.io/ajnart/homarr:latest
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock # Optional, only if you want docker integration
-      - homarr-configs:/app/data/configs
-      - homarr-icons:/app/public/icons
-      - homarr-data:/data
-    restart: unless-stopped
-    ports:
-      - "${HOMARR_PORT}:7575"
-  # -----------------------------------------------------------------------------------------------------
-  flaresolverr:
-    image: ghcr.io/flaresolverr/flaresolverr:latest
-    container_name: flaresolverr
-    environment:
-      - LOG_LEVEL=${LOG_LEVEL:-info}
-      - LOG_HTML=${LOG_HTML:-false}
-      - CAPTCHA_SOLVER=${CAPTCHA_SOLVER:-none}
-      - TZ=Africa/Johannesburg
-    restart: unless-stopped
-    ports:
-      - "${FLARESOLVERR_PORT}:8191"
-  # -----------------------------------------------------------------------------------------------------
-  prometheus-qbittorrent-exporter:
-    image: ghcr.io/esanchezm/prometheus-qbittorrent-exporter
-    container_name: prometheus-qbittorrent-exporter
-    environment:
-      - QBITTORRENT_PORT=8080
-      - QBITTORRENT_HOST=127.0.0.1
-    ports:
-      - "${PROMETHEUS_PORT}:8000"
-    restart: unless-stopped
+    maintainerr:
+        image: ghcr.io/jorenn92/maintainerr:latest # or jorenn92/maintainerr:latest
+        container_name: maintainerr
+        user: 1000:1000
+        volumes:
+          - type: bind
+            source: ./data
+            target: /opt/data
+        environment:
+          - TZ=Africa/Johannesburg
+        ports:
+          - ${MAINTAINERR_PORT}:6246
+        restart: unless-stopped
   # -----------------------------------------------------------------------------------------------------
 volumes:
   sonarr-config:
