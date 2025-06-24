@@ -86,19 +86,6 @@ services:
     ports:
       - ${JELLYSEER_PORT}:5055
   # -----------------------------------------------------------------------------------------------------
-  maintainerr:
-    image: ghcr.io/jorenn92/maintainerr:2.17.0
-    container_name: maintainerr
-    user: 1000:1000
-    volumes:
-      - maintainerr-config:/opt/data
-    environment:
-      - TZ=Africa/Johannesburg
-      - UI_PORT=${MAINTAINERR_PORT} # uncomment to change the UI port (default 6246). Useful if you're on a network where the port is already in use
-    ports:
-      - ${MAINTAINERR_PORT}:6246
-    restart: unless-stopped
-  # -----------------------------------------------------------------------------------------------------
 volumes:
   sonarr-config:
   radarr-config:
@@ -109,4 +96,3 @@ volumes:
   homarr-configs:
   homarr-icons:
   homarr-data:
-  maintainerr-config:
