@@ -87,18 +87,16 @@ services:
       - ${JELLYSEER_PORT}:5055
   # -----------------------------------------------------------------------------------------------------
   maintainerr:
-      image: ghcr.io/jorenn92/maintainerr:latest # or jorenn92/maintainerr:latest
-      container_name: maintainerr
-      user: 1000:1000
-      volumes:
-        - type: bind
-          source: ./data
-          target: /opt/data
-      environment:
-        - TZ=Africa/Johannesburg
-      ports:
-        - ${MAINTAINERR_PORT}:6246
-      restart: unless-stopped
+    image: ghcr.io/jorenn92/maintainerr:latest
+    container_name: maintainerr
+    user: 1000:1000
+    volumes:
+      - maintainerr-config:/opt/data
+    environment:
+      - TZ=Africa/Johannesburg
+    ports:
+      - ${MAINTAINERR_PORT}:6246
+    restart: unless-stopped
   # -----------------------------------------------------------------------------------------------------
 volumes:
   sonarr-config:
@@ -110,3 +108,4 @@ volumes:
   homarr-configs:
   homarr-icons:
   homarr-data:
+  maintainerr-config:
