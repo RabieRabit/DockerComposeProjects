@@ -87,7 +87,7 @@ services:
       - ${JELLYSEER_PORT}:5055
   # -----------------------------------------------------------------------------------------------------
   maintainerr:
-    image: ghcr.io/jorenn92/maintainerr:v2.17.0
+    image: ghcr.io/jorenn92/maintainerr:2.17.0
     container_name: maintainerr
     user: 1000:1000
     volumes:
