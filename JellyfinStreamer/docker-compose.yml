@@ -93,6 +93,3 @@ volumes:
   jellyfin-config:
   qbittorrent-config:
   jellyseerr-config:
-  homarr-configs:
-  homarr-icons:
-  homarr-data:
