@@ -3,9 +3,9 @@ services:
   sonarr:
     image: lscr.io/linuxserver/sonarr:latest
     container_name: sonarr
-    network_mode: "service:vpn"
+    network_mode: "service:gluetun"
     depends_on:
-      vpn:
+      gluetun:
         condition: service_healthy
     environment:
       - PUID=1000
@@ -19,9 +19,9 @@ services:
   radarr:
     image: lscr.io/linuxserver/radarr:latest
     container_name: radarr
-    network_mode: "service:vpn"
+    network_mode: "service:gluetun"
     depends_on:
-      vpn:
+      gluetun:
         condition: service_healthy
     environment:
       - PUID=1000
@@ -35,9 +35,9 @@ services:
   prowlarr:
     image: lscr.io/linuxserver/prowlarr:latest
     container_name: prowlarr
-    network_mode: "service:vpn"
+    network_mode: "service:gluetun"
     depends_on:
-      vpn:
+      gluetun:
         condition: service_healthy
     environment:
       - PUID=1000
@@ -64,9 +64,9 @@ services:
   qbittorrent:
     image: lscr.io/linuxserver/qbittorrent:latest
     container_name: qbittorrent
-    network_mode: "service:vpn"
+    network_mode: "service:gluetun"
     depends_on:
-      vpn:
+      gluetun:
         condition: service_healthy
     environment:
       - PUID=1000
@@ -92,42 +92,21 @@ services:
     ports:
       - ${JELLYSEER_PORT}:5055
   # -----------------------------------------------------------------------------------------------------
-
-  vpn:
-    image: thrnz/docker-wireguard-pia
-    container_name: vpn
-    volumes:
-      #Auth token is stored here
-      - pia:/pia
-      # If enabled, the forwarded port is dumped to /pia-shared/port.dat for potential use in other containers
-      - pia-shared:/pia-shared
+  gluetun:
+    image: qmcgaw/gluetun
+    container_name: gluetun
+    restart: on-failure
     cap_add:
       - NET_ADMIN
-      # SYS_MODULE might not be needed with a 5.6+ kernel?
-      #- SYS_MODULE
-    # If the kernel module isn't available, mounting the tun device may be necessary for userspace implementations
-    #devices:
-      #- /dev/net/tun:/dev/net/tun
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    volumes:
+      - gluetun-data:/gluetun
     environment:
-      # The following env vars are required:
-      - LOC=${PIA_LOCATION}
-      - USER=${PIA_USER}
-      - PASS=${PIA_PASS}
-      #The rest are optional:
-      - LOCAL_NETWORK=${LOCAL_NETWORK}
-      - RECONNECT=1
-      #- KEEPALIVE=25
-      - VPNDNS=8.8.8.8,8.8.4.4
-      - PORT_FORWARDING=1
-    sysctls:
-      # The wg-quick script tries to set this when setting up routing, however this requires running the container
-      # with the --privileged flag set. Setting it here instead if needed means the container can be run with lower
-      # privileges. This only needs setting if strict reverse path filtering (rp_filter=1) is used.
-      - net.ipv4.conf.all.src_valid_mark=1
-      # May as well disable ipv6. Should be blocked anyway.
-      - net.ipv6.conf.default.disable_ipv6=1
-      - net.ipv6.conf.all.disable_ipv6=1
-      - net.ipv6.conf.lo.disable_ipv6=1
+      - VPN_SERVICE_PROVIDER=${GLUETUN_PROVIDER}
+      - OPENVPN_USER=${PIA_USER}
+      - OPENVPN_PASSWORD=${PIA_PASS}
+      - SERVER_REGIONS=${PIA_LOCATION}
     ports:
       - ${SONARR_PORT}:8989
       - ${RADARR_PORT}:7878
@@ -143,6 +122,4 @@ volumes:
   jellyfin-config:
   qbittorrent-config:
   jellyseerr-config:
-  maintainer-data:
-  pia:
-  pia-shared:
+  gluetun-data:
