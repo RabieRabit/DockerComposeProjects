@@ -85,6 +85,23 @@ services:
       - ${SONARR_PORT}:8989
       - ${RADARR_PORT}:7878
       - ${PROWLARR_PORT}:9696
+      - ${BAZARR_PORT}:6767
       - 8080:8080
       - 6881:6881
       - 6881:6881/udp
+  # -----------------------------------------------------------------------------------------------------
+  bazarr:
+    image: lscr.io/linuxserver/bazarr:latest
+    container_name: bazarr
+    network_mode: "service:gluetun"
+    depends_on:
+      gluetun:
+        condition: service_healthy
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    volumes:
+      - ${DATA_DIR}/bazarr-config:/config
+      - ${VIDEO_DIR}:/video #optional
+    restart: unless-stopped
