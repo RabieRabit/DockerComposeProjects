@@ -1,0 +1,29 @@
+services:
+  # -----------------------------------------------------------------------------------------------------
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:latest
+    container_name: jellyfin
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Africa/Johannesburg
+    volumes:
+      - ${DATA_DIR}/jellyfin-config:/config
+      - ${VIDEO_DIR}:/video
+    restart: unless-stopped
+    ports:
+      - ${JELLYFIN_PORT}:8096
+  # -----------------------------------------------------------------------------------------------------
+  jellyseerr:
+    image: fallenbagel/jellyseerr:latest
+    container_name: jellyseerr
+    environment:
+      - LOG_LEVEL=debug
+      - TZ=Africa/Johannesburg
+    volumes:
+      - ${DATA_DIR}/jellyseerr-config:/app/config
+      - ${VIDEO_DIR}:/video
+    restart: unless-stopped
+    ports:
+      - ${JELLYSEER_PORT}:5055
+  # -----------------------------------------------------------------------------------------------------

@@ -3,93 +3,88 @@ services:
   sonarr:
     image: lscr.io/linuxserver/sonarr:latest
     container_name: sonarr
+    network_mode: "service:gluetun"
+    depends_on:
+      gluetun:
+        condition: service_healthy
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=Africa/Johannesburg
+      - TZ=${TIMEZONE}
     volumes:
-      - sonarr-config:/config
+      - ${DATA_DIR}/sonarr-config:/config
       - ${VIDEO_DIR}:/video
     restart: unless-stopped
-    ports:
-      - ${SONARR_PORT}:8989
   # -----------------------------------------------------------------------------------------------------
   radarr:
     image: lscr.io/linuxserver/radarr:latest
     container_name: radarr
+    network_mode: "service:gluetun"
+    depends_on:
+      gluetun:
+        condition: service_healthy
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=Africa/Johannesburg
+      - TZ=${TIMEZONE}
     volumes:
-      - radarr-config:/config
+      - ${DATA_DIR}/radarr-config:/config
       - ${VIDEO_DIR}:/video
     restart: unless-stopped
-    ports:
-      - ${RADARR_PORT}:7878
   # -----------------------------------------------------------------------------------------------------
   prowlarr:
     image: lscr.io/linuxserver/prowlarr:latest
     container_name: prowlarr
+    network_mode: "service:gluetun"
+    depends_on:
+      gluetun:
+        condition: service_healthy
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=Africa/Johannesburg
+      - TZ=${TIMEZONE}
     volumes:
-      - prowlarr-config:/config
+      - ${DATA_DIR}/prowlarr-config:/config
     restart: unless-stopped
-    ports:
-      - ${PROWLARR_PORT}:9696
-  # -----------------------------------------------------------------------------------------------------
-  jellyfin:
-    image: lscr.io/linuxserver/jellyfin:latest
-    container_name: jellyfin
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Africa/Johannesburg
-    volumes:
-      - jellyfin-config:/config
-      - ${VIDEO_DIR}:/video
-    restart: unless-stopped
-    ports:
-      - ${JELLYFIN_PORT}:8096
   # -----------------------------------------------------------------------------------------------------
   qbittorrent:
     image: lscr.io/linuxserver/qbittorrent:latest
     container_name: qbittorrent
+    network_mode: "service:gluetun"
+    depends_on:
+      gluetun:
+        condition: service_healthy
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=Africa/Johannesburg
+      - TZ=${TIMEZONE}
       - WEBUI_PORT=8080
       - TORRENTING_PORT=6881
     volumes:
-      - qbittorrent-config:/config
+      - ${DATA_DIR}/qbittorrent-config:/config
       - ${VIDEO_DIR}:/video #optional
+    restart: unless-stopped
+  # -----------------------------------------------------------------------------------------------------
+  gluetun:
+    image: qmcgaw/gluetun
+    container_name: gluetun
+    restart: on-failure
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    volumes:
+      - ${DATA_DIR}/gluetun-data:/gluetun
+    environment:
+      - VPN_SERVICE_PROVIDER=${GLUETUN_PROVIDER}
+      - OPENVPN_USER=${PIA_USER}
+      - OPENVPN_PASSWORD=${PIA_PASS}
+      - SERVER_REGIONS=${PIA_LOCATION}
+      - FIREWALL_OUTBOUND_SUBNETS=${SUBNET}
     ports:
+      - ${SONARR_PORT}:8989
+      - ${RADARR_PORT}:7878
+      - ${PROWLARR_PORT}:9696
       - 8080:8080
       - 6881:6881
       - 6881:6881/udp
-    restart: unless-stopped
-  # -----------------------------------------------------------------------------------------------------
-  jellyseerr:
-    image: fallenbagel/jellyseerr:latest
-    container_name: jellyseerr
-    environment:
-      - LOG_LEVEL=debug
-      - TZ=Africa/Johannesburg
-    volumes:
-      - jellyseerr-config:/app/config
-      - ${VIDEO_DIR}:/video
-    restart: unless-stopped
-    ports:
-      - ${JELLYSEER_PORT}:5055
-  # -----------------------------------------------------------------------------------------------------
-volumes:
-  sonarr-config:
-  radarr-config:
-  prowlarr-config:
-  jellyfin-config:
-  qbittorrent-config:
-  jellyseerr-config:
