@@ -1,11 +1,11 @@
 services:
   watchtower:
-    image: containrrr/watchtower
     container_name: watchtower
     restart: unless-stopped
+    environment:
+      WATCHTOWER_SCHEDULE: 0 0 4 * * * // 4am UTC
+      TZ: Africa/Johannesburg
+      WATCHTOWER_CLEANUP: "true"
+    image: containrrr/watchtower
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    environment:
-      - WATCHTOWER_CLEANUP=true # Removes old images to free space
-      - WATCHTOWER_POLL_INTERVAL=14400 # Check for updates every 24 hours (86400 sec)
-      - TZ=Africa/Johannesburg 
