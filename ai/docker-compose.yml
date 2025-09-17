@@ -1,0 +1,56 @@
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - C:/docker/ai/ollama:/root/.ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all # Use all available NVIDIA GPUs
+              capabilities: [gpu]
+    restart: unless-stopped
+    networks:
+      - ollama-webui
+
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:cuda
+    container_name: open-webui
+    depends_on:
+      - ollama
+    ports:
+      - "3000:8080"
+    volumes:
+      - C:/docker/ai/open-webui:/app/backend/data
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434
+    networks:
+      - ollama-webui
+    restart: unless-stopped
+
+  comfyui:
+    stdin_open: true
+    tty: true
+    container_name: comfyui-cu124
+    ports:
+        - 8288:8188
+    volumes:
+        - C:/docker/ai/comfyui:/root
+    image: yanwk/comfyui-boot:cu124-slim
+    networks:
+      - ollama-webui
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all # Use all available NVIDIA GPUs
+              capabilities: [gpu]
+
+networks:
+  ollama-webui:
+    driver: bridge

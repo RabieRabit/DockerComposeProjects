@@ -1,0 +1,52 @@
+services:
+  # -----------------------------------------------------------------------------------------------------
+  firefox:
+    image: lscr.io/linuxserver/firefox:latest
+    network_mode: "service:gluetun"
+    depends_on:
+      gluetun:
+        condition: service_healthy
+    container_name: firefox
+    security_opt:
+      - seccomp:unconfined #optional
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TIMEZONE}
+      - FIREFOX_CLI=https://www.linuxserver.io/ #optional
+    volumes:
+      - firefox-volume:/config
+    shm_size: "1gb"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [compute,video,graphics,utility]
+    restart: unless-stopped
+  # -----------------------------------------------------------------------------------------------------
+  gluetun:
+    image: qmcgaw/gluetun
+    container_name: gluetun
+    restart: on-failure
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    volumes:
+      - gluten-volume:/gluetun
+    environment:
+      - VPN_SERVICE_PROVIDER=${GLUETUN_PROVIDER}
+      - OPENVPN_USER=${PIA_USER}
+      - OPENVPN_PASSWORD=${PIA_PASS}
+      - SERVER_REGIONS=${PIA_LOCATION}
+      - FIREWALL_OUTBOUND_SUBNETS=${SUBNET}
+    ports:
+      - 3000:3000
+      - 3001:3001
+  # -----------------------------------------------------------------------------------------------------
+volumes:
+  gluten-volume:
+  firefox-volume:
+  # -----------------------------------------------------------------------------------------------------

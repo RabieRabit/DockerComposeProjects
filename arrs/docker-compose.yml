@@ -32,6 +32,38 @@ services:
       - ${VIDEO_DIR}:/video
     restart: unless-stopped
   # -----------------------------------------------------------------------------------------------------
+  cleanuparr:
+    image: ghcr.io/cleanuparr/cleanuparr:latest
+    container_name: cleanuparr
+    network_mode: "service:gluetun"
+    depends_on:
+      gluetun:
+        condition: service_healthy
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TIMEZONE}
+    volumes:
+      - ${DATA_DIR}/cleanuparr-config:/config
+      - ${VIDEO_DIR}:/video
+    restart: unless-stopped
+  # -----------------------------------------------------------------------------------------------------
+  huntarr:
+    image: ghcr.io/plexguide/huntarr:latest
+    container_name: huntarr
+    network_mode: "service:gluetun"
+    depends_on:
+      gluetun:
+        condition: service_healthy
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TIMEZONE}
+    volumes:
+      - ${DATA_DIR}/huntarr-config:/config
+      - ${VIDEO_DIR}:/video
+    restart: unless-stopped
+  # -----------------------------------------------------------------------------------------------------
   prowlarr:
     image: lscr.io/linuxserver/prowlarr:latest
     container_name: prowlarr
@@ -86,6 +118,8 @@ services:
       - ${RADARR_PORT}:7878
       - ${PROWLARR_PORT}:9696
       - ${BAZARR_PORT}:6767
+      - ${CLEANUPARR_PORT}:11011
+      - ${HUNTARR_PORT}:9705
       - 8080:8080
       - 6881:6881
       - 6881:6881/udp
